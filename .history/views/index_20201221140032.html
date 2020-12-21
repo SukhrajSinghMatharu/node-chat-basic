@@ -1,0 +1,84 @@
+<html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <style>
+        .mymessage{
+            float: left;
+            clear: both;
+            border-radius: 15px;
+            padding: 8px;
+            background-color:rgb(255, 255, 255);
+            color:rgb(1, 94, 138);
+            margin-top: 15px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1.5px 5px 0 rgba(0, 0, 0, 0.19);
+        }
+        .othermessage{
+            float: right;
+            clear: both;
+            border-radius: 15px;
+            padding: 8px;
+            background-color:rgb(1, 94, 138);
+            color: #ffffff;
+            margin-top: 15px;
+        }
+        .notification{
+            float: center;
+            clear: both;
+            border-radius: 12px;
+            padding: 5px;
+            background-color:rgb(206, 117, 0);
+            color: #ffffff;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .send{
+            border-radius: 12px;
+            padding: 8px;
+            background-color:rgb(206, 117, 0);
+            border: 0px;
+            color: #ffffff;
+            position: fixed;
+            right: 0px;
+  background-color: #fff;
+  width: 300px;
+  height: 600px;
+  border: 1px solid black;
+  overflow-y: auto;
+        }
+    </style>
+<body>
+    <input type="text" id="messagebox">
+    <button class="send" onclick="myFunction()">Send</button>
+   
+    <div id="main"></div>
+    <script>
+    
+    const socket = io();
+    socket.on('recieve-message',(data)=>{
+        console.log(data) 
+        // var count = parseInt(data);
+        // document.getElementById("demo").innerHTML = data;
+        var div = document.createElement("div");
+        div.className = "othermessage";
+        div.innerHTML = data;
+        document.getElementById("main").appendChild(div);
+    });// adding click event on button 
+    socket.on('new-user',(data)=>{
+        var div = document.createElement("div");
+        div.className = "notification";
+        div.innerHTML = 'New user added '+data;
+        document.getElementById("main").appendChild(div);
+    });
+    function myFunction() {
+        var data = document.getElementById("messagebox").value;
+        var div = document.createElement("div");
+        div.className = 'mymessage'
+        div.innerHTML = data;
+        document.getElementById("main").appendChild(div);
+        socket.emit('send-message',data);
+    }
+    document.querySelector('#inc').addEventListner('click', () => {
+        socket.emit('increment')// Sending increment event to server 
+    }); 
+    </script>
+</body >
+<html>

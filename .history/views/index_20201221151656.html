@@ -1,0 +1,133 @@
+<html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <style>
+        #body {
+            position: relative;
+            min-height: 30  0px;
+        }
+        .mymessage{
+            float: right;
+            clear: both;
+            border-radius: 15px 15px 0px 15px;
+            padding: 8px;
+            background-color:rgb(255, 255, 255);
+            color:rgb(1, 94, 138);
+            margin-top: 7px;
+            margin-bottom: 7px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 1.5px 5px 0 rgba(0, 0, 0, 0.19);
+        }
+        .othermessage{
+            float: left;
+            clear: both;
+            border-radius: 15px 15px 15px 0px;
+            padding: 8px;
+            background-color:rgb(1, 94, 138);
+            color: #ffffff;
+            margin-top: 7px;
+            margin-bottom: 7px;
+        }
+        .notification{
+            clear: both;
+            border-radius: 12px;
+            padding: 5px;
+            background-color:rgb(206, 117, 0);
+            color: #ffffff;
+            margin-top: 7px;
+            margin-bottom: 7px;
+            text-align: center;
+        }
+        .send-button{
+            border-radius: 0px 12px 12px 0px;
+            padding: 8px;
+            padding-right: 50px;
+            padding-left: 50px;
+            background-color:rgb(206, 117, 0);
+            border: 0px;
+            color: #ffffff;
+        }
+        .messagebox{
+            border-radius: 12px 0px 0px 12px;
+            width: 500px;
+            padding: 8px;
+            border: 0px;
+        }
+        .send{
+            border-radius: 12px;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            position: absolute;
+            bottom: 10;
+        }
+        #main{
+            height: 570px;
+            width: 75%;
+            position: relative;
+            float: left;
+            overflow: scroll;
+        }
+        #unmain{
+            height: 570px;
+            width: 25%;
+            position: relative;
+            float: left;
+            overflow: scroll;
+        }
+    </style>
+<body>
+
+    <div  id="main"></div>
+    <div  id="unmain"></div>
+    <div class="send">
+        <input class="messagebox" type="text" id="messagebox"  onkeypress="handle(event)" >
+        <button class="send-button" id="sendbutton" onclick="myFunction()">Send</button>
+    </div>
+    <script>
+    var username;
+    var person = prompt("Please enter your name:", "Unknown user");
+    if (person == null || person == "") {
+        username = "Unknown user";
+    } else {
+        username = person;
+    }
+    const socket = io();
+    socket.emit('socket-connected',username);
+    socket.on('recieve-message',(data)=>{
+        console.log(data) 
+        // var count = parseInt(data);
+        // document.getElementById("demo").innerHTML = data;
+        var div = document.createElement("div");
+        div.className = "othermessage";
+        div.innerHTML = data.name+" : "+data.message;
+        document.getElementById("main").appendChild(div);
+    });// adding click event on button 
+    socket.on('new-user',(data)=>{
+        var div = document.createElement("div");
+        div.className = "notification";
+        div.innerHTML = data.username+' joined the chat';
+        document.getElementById("unmain").appendChild(div);
+        var div = document.createElement("div");
+        div.className = "notification";
+        div.innerHTML = data.username+' joined';
+        document.getElementById("main").appendChild(div);
+    });
+    function myFunction() {
+        var data = document.getElementById("messagebox").value;
+        var div = document.createElement("div");
+        div.className = 'mymessage'
+        div.innerHTML = data;
+        document.getElementById("main").appendChild(div);
+        socket.emit('send-message',data);
+
+        document.getElementById("messagebox").value = '';
+    }
+    document.querySelector('#inc').addEventListner('click', () => {
+        socket.emit('increment')// Sending increment event to server 
+    }); 
+    function handle(e){
+        if(e.keyCode === 13){
+            e.preventDefault(); 
+            myFunction();
+        }
+    }
+    </script>
+</body >
+<html>

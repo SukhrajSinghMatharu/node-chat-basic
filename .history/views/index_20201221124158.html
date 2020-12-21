@@ -1,0 +1,31 @@
+<html>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+
+<body>
+    <button onclick="myFunction()">Increment</button>
+    <div id="demo">1</div>
+    <div id="main"></div>
+    <script>
+    var count = parseInt(document.getElementById("demo").innerHTML);   
+    console.log('value of demo is', count)
+    const socket = io();
+    socket.on('updatecount',(data)=>{
+        console.log(data) 
+        var count = parseInt(data);
+        document.getElementById("demo").innerHTML = data;
+        var div = document.createElement("div");
+        div.innerHTML = data;
+        document.getElementById("main").appendChild(div);
+    });// adding click event on button 
+    function myFunction() {
+        console.log(count)
+        socket.emit('increment',parseInt(document.getElementById("demo").innerHTML))
+        
+        document.getElementById("demo").innerHTML = count;
+    }
+    document.querySelector('#inc').addEventListner('click', () => {
+        socket.emit('increment')// Sending increment event to server 
+    }); 
+    </script>
+</body >
+<html>
